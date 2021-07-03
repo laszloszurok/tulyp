@@ -1,0 +1,240 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+import pydoc
+import dbus
+import lyricsgenius
+
+from urllib.request import urlopen, Request
+from urllib.parse import quote
+import re
+
+class LyricsNotFoundError(Exception):
+    pass
+
+player = "ncspot"
+
+search_url = 'https://www.google.com/search?q='
+HEADER = {'User-Agent': 'Mozilla/5.0'}
+CLASS_NAME = r'\w{5,7} \w{4,5} \w{5,7}'  # dependent on User-Agent
+
+def query(track_name):
+    '''encodes search query
+    '''
+    track_name = re.sub(r'(\[.*\].*)|(\(.*\).*)', '', track_name).strip()
+    return quote( track_name + ' lyrics')
+
+
+def get_html(search_url, header=HEADER):
+    ''' returns html text from given search_url
+    '''
+    try:
+        req = Request(search_url, data=None, headers=header)
+        req_search_url = urlopen(req)
+    except Exception as e:
+        return 'Cannot connect to internet!', e
+
+    if req_search_url.code != 200:
+        print('invalid request')
+        exit(1)
+
+    return req_search_url.read().decode('utf-8')
+
+
+def get_az_html(search_url):
+    ''' finds azlyrics website link and
+        returns html text from azlyrics
+
+        if azlyrics link not found returns error string
+    '''
+    html = get_html(search_url.replace('lyrics', 'azlyrics'))
+    if isinstance(html, tuple):
+        return html
+
+    regex = re.compile(r'(http[s]?://www.azlyrics.com/lyrics(?:.*?))&amp')
+    az_search_url = regex.search(html)
+
+    if az_search_url == None:
+        return 'No Lyrics Found!'
+    else:
+        header = {'User-Agent': 'Mozilla/5.0 Firefox/70.0'}
+        az_search_url = az_search_url.group(1)
+        az_html = get_html(az_search_url, header)
+        return az_html
+
+
+def get_azlyrics(search_url):
+    ''' fetches lyrics from azlyrics
+        returns list if strings of lyrics
+
+        if lyrics not found returns error string
+    '''
+    az_html = get_az_html(search_url)
+    if isinstance(az_html, tuple):
+        return az_html[0]
+
+    az_regex = re.compile(
+        r'<!-- Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. -->(.*)<!-- MxM banner -->', re.S)
+
+    ly = az_regex.search(az_html)
+    if ly == None:
+        # azlyrics not found
+        raise LyricsNotFoundError
+
+    rep = {'&quot;': '\"', '&amp;': '&', '\r': ''}
+
+    ly = re.sub(r'<[/]?\w*?>', '', ly.group(1)).strip()
+    # ly = ly.replace('&quot;', '\"').replace('&amp;', '&')
+    # regex = re.compile('|'.join(substrings))
+    ly = re.sub('|'.join(rep.keys()), lambda match: rep[match.group(0)], ly)
+    lyrics_lines = ly.split('\n')
+
+    return lyrics_lines
+
+
+def fetch_lyrics(search_url):
+    ''' fetches sources from google, then azlyrics
+        checks if lyrics are valid
+
+        returns list of strings
+
+        if lyrics not found in both google & azlyrics
+        returns string of error from get_azlyrics()
+    '''
+    html = get_html(search_url)
+    if isinstance(html, tuple):
+        return html[0]
+
+    html_regex = re.compile(
+        r'<div class="{}">([^>]*?)</div>'.format(CLASS_NAME), re.S)
+
+    text_list = html_regex.findall(html)
+
+    ly = []
+    for l in text_list[1:]:
+        # lyrics must be multiline,
+        # ignore the artist info below lyrics
+        if l.count('\n') > 2:
+            ly += l.split('\n')
+
+    # format lyrics
+    lyrics_lines = ly
+
+    return lyrics_lines
+
+
+def get_lyrics(track_name, source, cache=True):
+    ''' returns list of strings with lines of lyrics
+        also reads/write to cache file | if cache=True
+
+        track_name -> track name in format "artist - title"
+        source -> source to fetch lyrics from ('google' or 'azlyrics')
+        cache -> bool | whether to check lyrics from cache or not.
+    '''
+    # filepath = get_filename(track_name)
+
+    # if not os.path.isdir(CACHE_PATH):
+    #     os.makedirs(CACHE_PATH)
+
+    # if os.path.isfile(filepath) and cache:
+    #     # lyrics exist
+    #     with open(filepath) as file:
+    #         lyrics_lines = file.read().splitlines()
+    # else:
+
+    # some empty lines concatenated to the lyrics for better readablility in a pager
+    bottom_padding = "\n" * 30
+
+    if source == 'google':
+        lyrics_lines = fetch_lyrics(search_url + query(track_name))
+        lyrics_lines = "\n".join(lyrics_lines)
+        if len(lyrics_lines) == 0:
+            raise LyricsNotFoundError
+        lyrics_lines = artist + " - " + title + "\n\n" + lyrics_lines + bottom_padding
+    elif source == 'azlyrics':
+        lyrics_lines = get_azlyrics(search_url + query(track_name))
+        lyrics_lines = "\n".join(lyrics_lines)
+        lyrics_lines = artist + " - " + title + "\n\n" + lyrics_lines + bottom_padding
+    elif source == 'genius':
+        song = genius.search_song(title, artist)
+        try:
+            lyrics_lines = artist + " - " + title + "\n\n" + song.lyrics + bottom_padding
+        except AttributeError:
+            raise LyricsNotFoundError
+    else:
+        print(f'Unknown source {source}')
+        sys.exit()
+
+    pydoc.pipepager(lyrics_lines, cmd="bat -n")
+
+
+genius = lyricsgenius.Genius("udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1") # Access token
+genius.verbose = False # Turn off status messages
+
+artist = ""
+title = ""
+
+try:
+    session_bus = dbus.SessionBus()
+
+    bus_data = (f"org.mpris.MediaPlayer2.{player}", "/org/mpris/MediaPlayer2")
+    bus = session_bus.get_object(*bus_data)
+
+    interface = dbus.Interface(bus, "org.freedesktop.DBus.Properties")
+    metadata = interface.Get("org.mpris.MediaPlayer2.Player", "Metadata")
+
+    artist_list = metadata.get("xesam:albumArtist")
+    artist = next(iter(artist_list))
+    title = metadata.get("xesam:title")
+
+    track_name = artist + " - " + title + "\n"
+
+
+except dbus.DBusException:
+    print(f"{player} is not running")
+    sys.exit()
+
+source = ""
+if len(sys.argv) > 1:
+    source = sys.argv[1]
+
+if not source:
+    try:
+        print("trying genius...")
+        get_lyrics(track_name, "genius")
+    except LyricsNotFoundError:
+        try:
+            print("genius lyrics not found\ntrying azlyrics...")
+            get_lyrics(track_name, "azlyrics")
+        except LyricsNotFoundError:
+            try:
+                print("azlyrics not found\ntrying google...")
+                get_lyrics(track_name, "google")
+            except LyricsNotFoundError:
+                print("google lyrics not found\nNo lyrics found")
+else:
+    if source == "genius":
+        try:
+            print("trying genius...")
+            get_lyrics(track_name, "genius")
+        except LyricsNotFoundError:
+            print("genius lyrics not found")
+            sys.exit()
+    elif source == "azlyrics":
+        try:
+            print("trying azlyrics...")
+            get_lyrics(track_name, "azlyrics")
+        except LyricsNotFoundError:
+            print("azlyrics not found")
+            sys.exit()
+    elif source == "google":
+        try:
+            print("trying google...")
+            get_lyrics(track_name, "google")
+        except LyricsNotFoundError:
+            print("google lyrics not found")
+    else:
+        print("Unknown source")
+        sys.exit()
