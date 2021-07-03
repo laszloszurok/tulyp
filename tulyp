@@ -14,11 +14,24 @@ import re
 class LyricsNotFoundError(Exception):
     pass
 
-player = "ncspot"
+player = "spotify"
 
 search_url = 'https://www.google.com/search?q='
 HEADER = {'User-Agent': 'Mozilla/5.0'}
 CLASS_NAME = r'\w{5,7} \w{4,5} \w{5,7}'  # dependent on User-Agent
+
+# genius access token
+genius = lyricsgenius.Genius("udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1")
+
+# Turn off status messages
+genius.verbose = False
+
+artist = ""
+title = ""
+
+source = ""
+if len(sys.argv) > 1:
+    source = sys.argv[1]
 
 def query(track_name):
     '''encodes search query
@@ -170,71 +183,64 @@ def get_lyrics(track_name, source, cache=True):
     pydoc.pipepager(lyrics_lines, cmd="bat -n")
 
 
-genius = lyricsgenius.Genius("udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1") # Access token
-genius.verbose = False # Turn off status messages
-
-artist = ""
-title = ""
-
-try:
-    session_bus = dbus.SessionBus()
-
-    bus_data = (f"org.mpris.MediaPlayer2.{player}", "/org/mpris/MediaPlayer2")
-    bus = session_bus.get_object(*bus_data)
-
-    interface = dbus.Interface(bus, "org.freedesktop.DBus.Properties")
-    metadata = interface.Get("org.mpris.MediaPlayer2.Player", "Metadata")
-
-    artist_list = metadata.get("xesam:albumArtist")
-    artist = next(iter(artist_list))
-    title = metadata.get("xesam:title")
-
-    track_name = artist + " - " + title + "\n"
-
-
-except dbus.DBusException:
-    print(f"{player} is not running")
-    sys.exit()
-
-source = ""
-if len(sys.argv) > 1:
-    source = sys.argv[1]
-
-if not source:
+def main():
     try:
-        print("trying genius...")
-        get_lyrics(track_name, "genius")
-    except LyricsNotFoundError:
-        try:
-            print("genius lyrics not found\ntrying azlyrics...")
-            get_lyrics(track_name, "azlyrics")
-        except LyricsNotFoundError:
-            try:
-                print("azlyrics not found\ntrying google...")
-                get_lyrics(track_name, "google")
-            except LyricsNotFoundError:
-                print("google lyrics not found\nNo lyrics found")
-else:
-    if source == "genius":
+        session_bus = dbus.SessionBus()
+
+        bus_data = (f"org.mpris.MediaPlayer2.{player}", "/org/mpris/MediaPlayer2")
+        bus = session_bus.get_object(*bus_data)
+
+        interface = dbus.Interface(bus, "org.freedesktop.DBus.Properties")
+        metadata = interface.Get("org.mpris.MediaPlayer2.Player", "Metadata")
+
+        artist_list = metadata.get("xesam:albumArtist")
+        artist = next(iter(artist_list))
+        title = metadata.get("xesam:title")
+
+        track_name = artist + " - " + title + "\n"
+
+    except dbus.DBusException:
+        print(f"{player} is not running")
+        sys.exit()
+
+    if not source:
         try:
             print("trying genius...")
             get_lyrics(track_name, "genius")
         except LyricsNotFoundError:
-            print("genius lyrics not found")
-            sys.exit()
-    elif source == "azlyrics":
-        try:
-            print("trying azlyrics...")
-            get_lyrics(track_name, "azlyrics")
-        except LyricsNotFoundError:
-            print("azlyrics not found")
-            sys.exit()
-    elif source == "google":
-        try:
-            print("trying google...")
-            get_lyrics(track_name, "google")
-        except LyricsNotFoundError:
-            print("google lyrics not found")
+            try:
+                print("genius lyrics not found\ntrying azlyrics...")
+                get_lyrics(track_name, "azlyrics")
+            except LyricsNotFoundError:
+                try:
+                    print("azlyrics not found\ntrying google...")
+                    get_lyrics(track_name, "google")
+                except LyricsNotFoundError:
+                    print("google lyrics not found\nNo lyrics found")
     else:
-        print("Unknown source")
-        sys.exit()
+        if source == "genius":
+            try:
+                print("trying genius...")
+                get_lyrics(track_name, "genius")
+            except LyricsNotFoundError:
+                print("genius lyrics not found")
+                sys.exit()
+        elif source == "azlyrics":
+            try:
+                print("trying azlyrics...")
+                get_lyrics(track_name, "azlyrics")
+            except LyricsNotFoundError:
+                print("azlyrics not found")
+                sys.exit()
+        elif source == "google":
+            try:
+                print("trying google...")
+                get_lyrics(track_name, "google")
+            except LyricsNotFoundError:
+                print("google lyrics not found")
+        else:
+            print("Unknown source")
+
+
+if __name__ == "__main__":
+    main()
