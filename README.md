@@ -15,7 +15,7 @@ If one of the sources is provided as the first argument, only that source will b
 
 Without arguments it performs checks automatically, as needed.
 
-Lyrics are saved under `~/.cache/lyrics/artist-title`. If there are cached lyrics for a song, no queries will be executed and lyrics will be served from the cache.
+Lyrics are saved under `~/.cache/lyrics/artist-title`. If there are cached lyrics for a song, no queries will be executed and lyrics will be served from the cache. (Except when a source is passed as the first argument, then that source will be used.)
 
 ## Requirements
 
@@ -25,9 +25,9 @@ Lyrics are saved under `~/.cache/lyrics/artist-title`. If there are cached lyric
 
 ## Naming
 
-* Bat provides paging, so we got a terminal user interface => tu
-* We are dealing with lyrics => ly
-* The script is written in python => p
+* bat provides paging, so we got a terminal user interface => tu
+* we are dealing with lyrics => ly
+* the script is written in python => p
 * tu + ly + p = tulyp
 
 I am so good at naming things.
