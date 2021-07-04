@@ -19,7 +19,7 @@ class LyricsNotFoundError(Exception):
 
 cache_path = Path.home().joinpath('.cache', 'lyrics')
 
-player = "ncspot"
+player = "spotify"
 pager_cmd = "bat -n"
 
 search_url = 'https://www.google.com/search?q='
