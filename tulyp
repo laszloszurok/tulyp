@@ -234,14 +234,14 @@ def main():
                 show_lyrics(track_name, "genius", False)
             except LyricsNotFoundError:
                 sys.exit()
-        elif source == "azlyrics":
-            try:
-                show_lyrics(track_name, "azlyrics", False)
-            except LyricsNotFoundError:
-                sys.exit()
         elif source == "google":
             try:
                 show_lyrics(track_name, "google", False)
+            except LyricsNotFoundError:
+                sys.exit()
+        elif source == "azlyrics":
+            try:
+                show_lyrics(track_name, "azlyrics", False)
             except LyricsNotFoundError:
                 sys.exit()
         else:
