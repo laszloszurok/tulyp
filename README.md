@@ -15,6 +15,8 @@ If one of the sources is provided as the first argument, only that source will b
 
 Without arguments it performs checks automatically, as needed.
 
+Lyrics are saved under `~/.cache/lyrics/artist-title`. If there are cached lyrics for a song, no queries will be executed and lyrics will be served from the cache.
+
 ## Requirements
 
 * `bat` to display the lyrics (it is available in most linux distributions default repositories)
@@ -23,12 +25,9 @@ Without arguments it performs checks automatically, as needed.
 
 ## Naming
 
-Bat provides paging, so we got a terminal user interface => tu
-
-We are dealing with lyrics => ly
-
-The script is written in python => p
-
-tu + ly + p = tulyp
+* Bat provides paging, so we got a terminal user interface => tu
+* We are dealing with lyrics => ly
+* The script is written in python => p
+* tu + ly + p = tulyp
 
 I am so good at naming things.
