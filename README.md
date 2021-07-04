@@ -1,6 +1,6 @@
 # tulyp
 
-<img src="./images/screenshot.png" width="200" />
+<img src="./images/screenshot.png" width="600" />
 
 `tulyp` is a simple python script which displays the lyrics of the currently playing spotify song in the terminal. It checks for lyrics from 3 sources (stops at the first successful result): first genius.com, then google.com and finally azlyrics.com.
 
