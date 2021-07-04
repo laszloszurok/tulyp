@@ -175,6 +175,9 @@ def show_lyrics(track_name, source, cache=True):
                 sys.exit()
             try:
                 lyrics_lines = track_name + "\n\n" + str(song.lyrics) + bottom_padding
+
+                # for some reason genius returns this string at the end of lyrics, so we remove it:
+                lyrics_lines = re.sub(r'EmbedShare Url:CopyEmbed:Copy', '', lyrics_lines)
             except AttributeError:
                 print("genius lyrics not found")
                 raise LyricsNotFoundError
