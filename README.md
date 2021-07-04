@@ -1,5 +1,7 @@
 # tulyp
 
+![screenshot](images/screenshot.png)
+
 `tulyp` is a simple python script which displays the lyrics of the currently playing spotify song in the terminal. It checks for lyrics from 3 sources (stops at the first successful result): first genius.com, then google.com and finally azlyrics.com.
 
 Players other than spotify can be used too, if they are compliant with the mpris specification. Change the value of the `player` variable in the script to the name of the player (for ex. `player = "ncspot"`).
