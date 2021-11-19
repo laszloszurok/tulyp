@@ -25,6 +25,10 @@ Lyrics are saved under `~/.cache/lyrics/artist-title`. If there are cached lyric
 * `lyricsgenius` python lib to be able to get lyrics from genius.com (`pip install lyricsgenius`)
 * `python-dbus` to get the currently playing song (also available in default repos)
 
+## Different binary name for `bat` on Ubuntu
+
+On Ubuntu the `bat` command had to be renamed to `batcat` because of a nameclash with an other program. If you use Ubuntu make sure to change `player_cmd = "bat -n"` to `player_cmd = "batcat -n"` in `tulyp` to be able to display lyrics. See [this issue](https://github.com/laszloszurok/tulyp/issues/2) for more info. 
+
 ## Naming
 
 * bat provides paging, so we got a terminal user interface => tu
