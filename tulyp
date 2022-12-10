@@ -95,7 +95,6 @@ def get_azlyrics(search_url: str) -> str:
 
     ly = az_regex.search(az_html)
     if ly is None:
-        print("azlyrics not found")
         raise LyricsNotFoundError
 
     rep = {"&quot;": "\"", "&amp;": "&", "\r": ""}
@@ -173,14 +172,12 @@ def show_lyrics(track_name: str, source: str, cache: bool = True) -> None:
                 # for some reason genius returns this string at the end of lyrics, so we remove it:
                 lyrics_lines = re.sub(r"EmbedShare Url:CopyEmbed:Copy", "", lyrics_lines)
             except AttributeError:
-                print("genius lyrics not found")
                 raise LyricsNotFoundError
         elif source == "google":
             print("trying google...")
             lyrics_lines = fetch_lyrics(search_url + query(track_name))
             lyrics_lines = "\n".join(lyrics_lines)
             if len(lyrics_lines) == 0:
-                print("google lyrics not found")
                 raise LyricsNotFoundError
             lyrics_lines = track_name + "\n\n" + lyrics_lines + bottom_padding
         elif source == "azlyrics":
@@ -232,7 +229,7 @@ def main() -> None:
                 lyrics_found = True
                 break
             except LyricsNotFoundError:
-                print(f"Could not get lyrics from {s}")
+                print(f"Could not get lyrics from {s}\n")
     else:
         match source:
             case "genius":
