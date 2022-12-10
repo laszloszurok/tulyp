@@ -230,6 +230,7 @@ def main() -> None:
             try:
                 show_lyrics(track_name, s)
                 lyrics_found = True
+                break
             except LyricsNotFoundError:
                 print(f"Could not get lyrics from {s}")
     else:
