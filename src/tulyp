@@ -124,24 +124,10 @@ def main() -> None:
             except LyricsNotFoundError:
                 print(f"Could not get lyrics from {s}\n")
     else:
-        match source:
-            case "genius":
-                try:
-                    show_lyrics(track_name, "genius", False)
-                except LyricsNotFoundError:
-                    sys.exit()
-            case "google":
-                try:
-                    show_lyrics(track_name, "google", False)
-                except LyricsNotFoundError:
-                    sys.exit()
-            case "azlyrics":
-                try:
-                    show_lyrics(track_name, "azlyrics", False)
-                except LyricsNotFoundError:
-                    sys.exit()
-            case _:
-                print("Unknown source")
+        try:
+            show_lyrics(title=title, artist=artist, source=source, cache=False)
+        except LyricsNotFoundError:
+            sys.exit()
 
     if not lyrics_found:
         print("No lyrics found")
