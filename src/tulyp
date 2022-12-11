@@ -42,9 +42,10 @@ def get_filename(track_name: str) -> str:
 def show_lyrics(track_name: str, source: str, cache: bool = True) -> None:
     """Display lyrics, write lyrics to cache, and serve lyrics from cache if cache=True.
 
-    track_name -> track name in format "artist - title"
-    source -> source to fetch lyrics from (genius, azlyrics, google)
-    cache -> bool | whether to check lyrics fromcache or not.
+    Keyword arguments:
+        track_name: str -- track name in format "artist - title"
+        source: str -- source to fetch lyrics from (genius, azlyrics, google)
+        cache: bool -- whether to check if lyrics are available from cache
     """
     # some empty lines concatenated to the lyrics for better readablility in a pager
     bottom_padding = "\n" * 30
