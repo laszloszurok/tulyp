@@ -37,7 +37,7 @@ def get_filename(track_name: str) -> str:
     return os.path.join(cache_path, filename)
 
 
-def show_lyrics(track_name: str, source: str, cache: bool = True) -> None:
+def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> None:
     """Display lyrics, write lyrics to cache, and serve lyrics from cache if cache=True.
 
     Keyword arguments:
@@ -47,6 +47,8 @@ def show_lyrics(track_name: str, source: str, cache: bool = True) -> None:
     """
     # some empty lines concatenated to the lyrics for better readablility in a pager
     bottom_padding = "\n" * 30
+
+    track_name = f"{artist} - {title}"
 
     filepath = get_filename(track_name)
 
@@ -62,23 +64,20 @@ def show_lyrics(track_name: str, source: str, cache: bool = True) -> None:
     else:
         if source == "genius":
             print("trying genius...")
-            split = track_name.split(" - ")
-            artist = split[0]
-            title = split[1]
             lyrics = genius.get_lyrics(title=title, artist=artist)
-            lyrics_lines = track_name + "\n\n" + lyrics + bottom_padding
+            lyrics_lines = f"{track_name}\n\n{lyrics}{bottom_padding}"
         elif source == "google":
             print("trying google...")
             lyrics_lines = google.get_lyrics(search_url + query(track_name))
             lyrics_lines = "\n".join(lyrics_lines)
             if len(lyrics_lines) == 0:
                 raise LyricsNotFoundError
-            lyrics_lines = track_name + "\n\n" + lyrics_lines + bottom_padding
+            lyrics_lines = f"{track_name}\n\n{lyrics_lines}{bottom_padding}"
         elif source == "azlyrics":
             print("trying azlyrics...")
             lyrics_lines = azlyrics.get_lyrics(search_url + query(track_name))
             lyrics_lines = "\n".join(lyrics_lines)
-            lyrics_lines = track_name + "\n\n" + lyrics_lines + bottom_padding
+            lyrics_lines = f"{track_name}\n\n{lyrics_lines}{bottom_padding}"
         else:
             print(f"Unknown source {source}")
             sys.exit()
@@ -107,8 +106,6 @@ def main() -> None:
             print("Unable to get metadata")
             sys.exit()
 
-        track_name = f"{artist} - {title}"
-
     except dbus.DBusException:
         print(f"{player} is not running")
         sys.exit()
@@ -118,11 +115,14 @@ def main() -> None:
     if not source:
         for s in sources:
             try:
-                show_lyrics(track_name, s)
+                show_lyrics(title=title, artist=artist, source=s)
                 lyrics_found = True
                 break
             except LyricsNotFoundError:
                 print(f"Could not get lyrics from {s}\n")
+    elif source not in sources:
+        print("Unknown source")
+        sys.exit()
     else:
         try:
             show_lyrics(title=title, artist=artist, source=source, cache=False)
