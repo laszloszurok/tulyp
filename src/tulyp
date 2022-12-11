@@ -68,9 +68,6 @@ def show_lyrics(track_name: str, source: str, cache: bool = True) -> None:
             title = split[1]
             lyrics = genius.get_lyrics(title=title, artist=artist)
             lyrics_lines = track_name + "\n\n" + lyrics + bottom_padding
-
-            # for some reason genius returns this string at the end of lyrics, so we remove it:
-            lyrics_lines = re.sub(r"EmbedShare Url:CopyEmbed:Copy", "", lyrics_lines)
         elif source == "google":
             print("trying google...")
             lyrics_lines = google.get_lyrics(search_url + query(track_name))

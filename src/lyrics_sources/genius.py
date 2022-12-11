@@ -1,5 +1,6 @@
 import lyricsgenius
 import sys
+import re
 
 from exceptions.lyrics_not_found import LyricsNotFoundError
 
@@ -10,6 +11,22 @@ genius_api = lyricsgenius.Genius(genius_token)
 
 # Turn off status messages
 genius_api.verbose = False
+
+def format_lyrics(lyrics: str) -> str:
+    """Remove some unuseful string patterns from the input lyrics string.
+    
+    Used to clean up the lyrics returned from genius.com. Sometimes the
+    returned lyrics contain some trailing strings, that are not part of
+    the lyrics. They are just other strings that happen to be on genius.com
+    under the lyrics section. This function removes those and returns only
+    the lyrics.
+
+    Keyword arguments:
+        lyrics: str -- the lyrics gathered from genius.com
+    """
+    lyrics = re.sub(r"EmbedShare Url:CopyEmbed:Copy", "", lyrics)
+
+    return lyrics
 
 def get_lyrics(title: str, artist: str) -> str:
     """Search for a song on genius.com and return the lyrics.
@@ -28,7 +45,7 @@ def get_lyrics(title: str, artist: str) -> str:
     try:
         song = genius_api.search_song(title=title, artist=artist)
         if song is not None:
-            return song.lyrics
+            return format_lyrics(song.lyrics)
     except ConnectionError:
         print("No internet connection!")
         sys.exit()
