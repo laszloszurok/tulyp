@@ -12,7 +12,7 @@ genius_api = lyricsgenius.Genius(genius_token)
 # Turn off status messages
 genius_api.verbose = False
 
-def format_lyrics(lyrics: str) -> str:
+def format_lyrics(lyrics: str, title: str) -> str:
     """Remove some unuseful string patterns from the input lyrics string.
     
     Used to clean up the lyrics returned from genius.com. Sometimes the
@@ -24,7 +24,10 @@ def format_lyrics(lyrics: str) -> str:
     Keyword arguments:
         lyrics: str -- the lyrics gathered from genius.com
     """
+    lyrics = re.sub(f"{title} Lyrics", "", lyrics) # remove title from first line of lyrics
     lyrics = re.sub(r"EmbedShare Url:CopyEmbed:Copy", "", lyrics)
+    lyrics = re.sub(r"[0-9]*Embed*", "", lyrics)
+    lyrics = re.sub(r"You might also like", "", lyrics)
 
     return lyrics
 
@@ -45,7 +48,7 @@ def get_lyrics(title: str, artist: str) -> str:
     try:
         song = genius_api.search_song(title=title, artist=artist)
         if song is not None:
-            return format_lyrics(song.lyrics)
+            return format_lyrics(lyrics=song.lyrics, title=title)
     except ConnectionError:
         print("No internet connection!")
         sys.exit()
