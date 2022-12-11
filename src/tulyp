@@ -4,14 +4,13 @@
 
 import os
 import pydoc
-import re
 import sys
 import dbus
 from pathlib import Path
-from urllib.parse import quote
 
 from lyrics_sources import genius, azlyrics, google
 from exceptions.lyrics_not_found import LyricsNotFoundError
+from utils import create_cache_path
 
 cache_path = Path.home().joinpath(".cache", "lyrics")
 
@@ -19,26 +18,12 @@ player = "ncspot"
 pager_cmd = "bat -n"
 sources = ["genius", "google", "azlyrics"]
 
-search_url = "https://www.google.com/search?q="
-
 source = ""
 if len(sys.argv) > 1:
     source = sys.argv[1]
 
-def query(track_name: str) -> str:
-    """Take a search entry and encode it."""
-    track_name = re.sub(r"(\[.*\].*)|(\(.*\).*)", "", track_name).strip()
-    return quote(track_name + " lyrics")
-
-def get_filename(track_name: str) -> str:
-    """Return name of cache file made from track_name."""
-    filename = re.sub(r"(\[.*\].*)|(\(.*\).*)", "", track_name).strip()  # removing text in brackets [] ()
-    filename = re.sub(r"\s|\/|\\|\.", "", filename)
-    return os.path.join(cache_path, filename)
-
-
 def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> None:
-    """Display lyrics, write lyrics to cache, and serve lyrics from cache if cache=True.
+    """Display lyrics and write it to cache or serve lyrics from cache if cache=True.
 
     Keyword arguments:
         track_name: str -- track name in format "artist - title"
@@ -50,7 +35,7 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
 
     track_name = f"{artist} - {title}"
 
-    filepath = get_filename(track_name)
+    filepath = create_cache_path(track_name)
 
     if not os.path.isdir(cache_path):
         os.makedirs(cache_path)
@@ -64,28 +49,23 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
     else:
         if source == "genius":
             print("trying genius...")
-            lyrics = genius.get_lyrics(title=title, artist=artist)
-            lyrics_lines = f"{track_name}\n\n{lyrics}{bottom_padding}"
+            lyrics_lines = genius.get_lyrics(title=title, artist=artist)
         elif source == "google":
             print("trying google...")
-            lyrics_lines = google.get_lyrics(search_url + query(track_name))
-            lyrics_lines = "\n".join(lyrics_lines)
-            if len(lyrics_lines) == 0:
-                raise LyricsNotFoundError
-            lyrics_lines = f"{track_name}\n\n{lyrics_lines}{bottom_padding}"
+            lyrics_lines = google.get_lyrics(title=title, artist=artist)
         elif source == "azlyrics":
             print("trying azlyrics...")
-            lyrics_lines = azlyrics.get_lyrics(search_url + query(track_name))
-            lyrics_lines = "\n".join(lyrics_lines)
-            lyrics_lines = f"{track_name}\n\n{lyrics_lines}{bottom_padding}"
+            lyrics_lines = azlyrics.get_lyrics(title=title, artist=artist)
         else:
             print(f"Unknown source {source}")
             sys.exit()
 
-    with open(filepath, "w") as file:
-        file.writelines(lyrics_lines)
+    lyrics: str = f"{track_name}\n\n{lyrics_lines}{bottom_padding}"
 
-    pydoc.pipepager(lyrics_lines, cmd=pager_cmd)
+    with open(filepath, "w") as file:
+        file.writelines(lyrics)
+
+    pydoc.pipepager(lyrics, cmd=pager_cmd)
 
 def main() -> None:
     """Run tulyp."""
@@ -127,7 +107,7 @@ def main() -> None:
         try:
             show_lyrics(title=title, artist=artist, source=source, cache=False)
         except LyricsNotFoundError:
-            sys.exit()
+            lyrics_found = False
 
     if not lyrics_found:
         print("No lyrics found")
