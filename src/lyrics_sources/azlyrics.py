@@ -4,10 +4,12 @@ from urllib.request import Request, urlopen
 from urllib.error import URLError
 
 from exceptions.lyrics_not_found import LyricsNotFoundError
+from utils import create_query_str
 
 HEADER = {"User-Agent": "Mozilla/5.0"}
+base_url = "https://www.google.com/search?q="
 
-def get_html(search_url: str, header: str = HEADER) -> str:
+def get_html(search_url: str, header: dict[str, str] = HEADER) -> str:
     """Return html text from given search_url."""
     try:
         req = Request(search_url, data=None, headers=header)
@@ -44,9 +46,12 @@ def get_az_html(search_url: str) -> str:
         return az_html
 
 
-def get_lyrics(search_url: str) -> str:
+def get_lyrics(title: str, artist: str) -> str:
     """Fetch lyrics from azlyrics and return a list of strings of the lyrics."""
+    search_url = f"{base_url}{create_query_str(title=title, artist=artist)}"
+
     az_html = get_az_html(search_url)
+
     if isinstance(az_html, tuple):
         return az_html[0]
 
@@ -61,6 +66,5 @@ def get_lyrics(search_url: str) -> str:
 
     ly = re.sub(r"<[/]?\w*?>", "", ly.group(1)).strip()
     ly = re.sub("|".join(rep.keys()), lambda match: rep[match.group(0)], ly)
-    lyrics_lines = ly.split("\n")
 
-    return lyrics_lines
+    return ly
