@@ -8,9 +8,7 @@ import re
 import sys
 import dbus
 from pathlib import Path
-from urllib.error import URLError
 from urllib.parse import quote
-from urllib.request import Request, urlopen
 
 from lyrics_sources import genius, azlyrics, google
 from exceptions.lyrics_not_found import LyricsNotFoundError
