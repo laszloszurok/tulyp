@@ -1,0 +1,2 @@
+class LyricsNotFoundError(Exception):
+    pass
