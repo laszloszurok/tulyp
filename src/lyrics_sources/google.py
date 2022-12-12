@@ -31,9 +31,14 @@ def get_lyrics(title: str, artist: str) -> str:
     Raises:
         LyricsNotFoundError: No lyrics were found on Google.
     """
-    
     search_url: str = f"{BASE_URL}{create_query_str(title=title, artist=artist)}"
-    web_page: str = requests.get(url=search_url, headers=HEADERS).text
+
+    try:
+        web_page: str = requests.get(url=search_url, headers=HEADERS).text
+    except:
+        print("Failed to access google.com! Check you internet connection!")
+        raise LyricsNotFoundError
+
     html = BeautifulSoup(web_page, "html.parser")
     target_div = html.find(name="div", attrs={"jsname": "WbKHeb"})
 
