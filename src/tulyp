@@ -47,6 +47,7 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
     else:
         if source == "genius":
             print("trying genius...")
+            genius.init_genius_api()
             lyrics_lines = genius.get_lyrics(title=title, artist=artist)
         elif source == "google":
             print("trying google...")

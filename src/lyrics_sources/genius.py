@@ -5,19 +5,29 @@ import os
 
 from exceptions.lyrics_not_found import LyricsNotFoundError
 
-try:
-    genius_token: str = os.environ["TULYP_GENIUS_TOKEN"]
-except KeyError:
-    print("No TULYP_GENIUS_TOKEN environment variable found.")
-    print("Using the genius.com API token provided by tulyp.")
-    print()
-    genius_token: str = "udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1"
+genius_token: str = "udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1"
+genius_api = None
 
-# initialize genius 
-genius_api = lyricsgenius.Genius(genius_token)
+def init_genius_api():
+    """Initialize the genius API with an acces token.
 
-# Turn off status messages
-genius_api.verbose = False
+    The token can be provided through an environment variable called
+    TULYP_GENIUS_TOKEN. If this env var is not set, a default token
+    will be used for initialization and a message will be printed
+    stating that a default token is used.
+    """
+    global genius_token, genius_api
+    try:
+        genius_token = os.environ["TULYP_GENIUS_TOKEN"]
+    except KeyError:
+        print("No TULYP_GENIUS_TOKEN environment variable found.")
+        print("Using the genius.com API token provided by tulyp.")
+        print()
+
+    genius_api = lyricsgenius.Genius(genius_token)
+
+    # Turn off status messages
+    genius_api.verbose = False
 
 def format_lyrics(lyrics: str, title: str) -> str:
     """Remove some unuseful string patterns from the input lyrics string.
@@ -53,6 +63,7 @@ def get_lyrics(title: str, artist: str) -> str:
     Raises:
         LyricsNotFoundError: No lyrics were found.
     """
+
     try:
         song = genius_api.search_song(title=title, artist=artist)
         if song is not None:
