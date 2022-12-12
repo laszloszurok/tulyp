@@ -1,10 +1,17 @@
 import lyricsgenius
 import sys
 import re
+import os
 
 from exceptions.lyrics_not_found import LyricsNotFoundError
 
-genius_token: str = "udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1"
+try:
+    genius_token: str = os.environ["TULYP_GENIUS_TOKEN"]
+except KeyError:
+    print("No TULYP_GENIUS_TOKEN environment variable found.")
+    print("Using the genius.com API token provided by tulyp.")
+    print()
+    genius_token: str = "udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1"
 
 # initialize genius 
 genius_api = lyricsgenius.Genius(genius_token)
@@ -28,6 +35,7 @@ def format_lyrics(lyrics: str, title: str) -> str:
     lyrics = re.sub(r"EmbedShare Url:CopyEmbed:Copy", "", lyrics)
     lyrics = re.sub(r"[0-9]*Embed*", "", lyrics)
     lyrics = re.sub(r"You might also like", "", lyrics)
+    lyrics = re.sub(r"Translations.*\[", "[", lyrics)
 
     return lyrics
 
