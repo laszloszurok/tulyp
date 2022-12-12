@@ -58,12 +58,14 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
             print(f"Unknown source {source}")
             sys.exit()
 
-    lyrics: str = f"{track_name}\n\n{lyrics_lines}{bottom_padding}"
-    pydoc.pipepager(lyrics, cmd=pager_cmd)
     if not serving_from_cache:
         with open(filepath, "w") as file:
             file.writelines(lyrics_lines)
 
+    pydoc.pipepager(
+        f"{track_name}\n\n{lyrics_lines}{bottom_padding}",
+        cmd=pager_cmd
+    )
 
 def main() -> None:
     """Run tulyp."""
