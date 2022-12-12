@@ -32,20 +32,19 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
     """
     # some empty lines concatenated to the lyrics for better readablility in a pager
     bottom_padding = "\n" * 30
-
     track_name = f"{artist} - {title}"
-
     filepath = create_cache_path(track_name)
+    serving_from_cache = False
 
     if not os.path.isdir(cache_path):
         os.makedirs(cache_path)
 
     if os.path.isfile(filepath) and cache:
-        # lyrics exist
         with open(filepath) as file:
             print("using lyrics from cache")
             lyrics_lines = file.read().splitlines()
             lyrics_lines = "\n".join(lyrics_lines)
+            serving_from_cache = True
     else:
         if source == "genius":
             print("trying genius...")
@@ -61,11 +60,11 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
             sys.exit()
 
     lyrics: str = f"{track_name}\n\n{lyrics_lines}{bottom_padding}"
-
-    with open(filepath, "w") as file:
-        file.writelines(lyrics)
-
     pydoc.pipepager(lyrics, cmd=pager_cmd)
+    if not serving_from_cache:
+        with open(filepath, "w") as file:
+            file.writelines(lyrics_lines)
+
 
 def main() -> None:
     """Run tulyp."""
