@@ -2,9 +2,9 @@ import sys
 import re
 from urllib.request import Request, urlopen
 from urllib.error import URLError
+from urllib.parse import quote_plus
 
 from exceptions.lyrics_not_found import LyricsNotFoundError
-from utils import create_query_str
 
 HEADER = {"User-Agent": "Mozilla/5.0"}
 base_url = "https://www.google.com/search?q="
@@ -48,7 +48,7 @@ def get_az_html(search_url: str) -> str:
 
 def get_lyrics(title: str, artist: str) -> str:
     """Fetch lyrics from azlyrics and return a list of strings of the lyrics."""
-    search_url = f"{base_url}{create_query_str(title=title, artist=artist)}"
+    search_url = f"{base_url}{quote_plus(string=f'{artist} {title} lyrics')}"
 
     az_html = get_az_html(search_url)
 

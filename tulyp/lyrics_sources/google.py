@@ -3,9 +3,9 @@ import os
 import re
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import quote_plus
 
 from exceptions.lyrics_not_found import LyricsNotFoundError
-from utils import create_query_str
 
 BASE_URL: str = "https://www.google.com/search?q="
 HEADERS: dict[str, str] = {
@@ -31,7 +31,8 @@ def get_lyrics(title: str, artist: str) -> str:
     Raises:
         LyricsNotFoundError: No lyrics were found on Google.
     """
-    search_url: str = f"{BASE_URL}{create_query_str(title=title, artist=artist)}"
+    search_url: str = f"{BASE_URL}{quote_plus(string=f'{artist} {title} lyrics')}"
+    print(search_url)
 
     try:
         web_page: str = requests.get(url=search_url, headers=HEADERS).text
