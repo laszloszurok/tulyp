@@ -52,7 +52,7 @@ def get_lyrics(title: str, artist: str) -> str:
     for verse_html in lyrics_html:
         verse_html_pretty = BeautifulSoup(str(verse_html), "html.parser").prettify()
         verse = BeautifulSoup(verse_html_pretty, "html.parser").get_text()
-        verse = os.linesep.join([line for line in verse.splitlines() if line.strip()])
+        verse = os.linesep.join([line.strip() for line in verse.splitlines() if line.strip()])
         lyrics = f"{lyrics}{verse}\n\n"
 
     return lyrics
