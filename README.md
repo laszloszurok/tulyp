@@ -24,6 +24,7 @@ Lyrics are saved under `~/.cache/lyrics/artist-title`. If there are cached lyric
 * `bat` to display the lyrics (it is available in most linux distributions default repositories)
 * `lyricsgenius` python lib to be able to get lyrics from genius.com (`pip install lyricsgenius`)
 * `python-dbus` to get the currently playing song (also available in default repos)
+* `beautifulsoup4` python lib to process html
 
 ## Different binary name for `bat` on Ubuntu
 
