@@ -42,29 +42,29 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
     if os.path.isfile(filepath) and cache:
         with open(filepath) as file:
             print("using lyrics from cache")
-            lyrics_lines = file.read()
+            lyrics = file.read()
             serving_from_cache = True
     else:
         if source == "genius":
             print("trying genius...")
             genius.init_genius_api()
-            lyrics_lines = genius.get_lyrics(title=title, artist=artist)
+            lyrics = genius.get_lyrics(title=title, artist=artist)
         elif source == "google":
             print("trying google...")
-            lyrics_lines = google.get_lyrics(title=title, artist=artist)
+            lyrics = google.get_lyrics(title=title, artist=artist)
         elif source == "azlyrics":
             print("trying azlyrics...")
-            lyrics_lines = azlyrics.get_lyrics(title=title, artist=artist)
+            lyrics = azlyrics.get_lyrics(title=title, artist=artist)
         else:
             print(f"Unknown source {source}")
             sys.exit()
 
     if not serving_from_cache:
         with open(filepath, "w") as file:
-            file.writelines(lyrics_lines)
+            file.writelines(lyrics)
 
     pydoc.pipepager(
-        f"{track_name}\n\n{lyrics_lines}{bottom_padding}",
+        f"{track_name}\n\n{lyrics}{bottom_padding}",
         cmd=pager_cmd
     )
 
