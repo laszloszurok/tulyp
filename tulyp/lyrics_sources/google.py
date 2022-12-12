@@ -32,7 +32,6 @@ def get_lyrics(title: str, artist: str) -> str:
         LyricsNotFoundError: No lyrics were found on Google.
     """
     search_url: str = f"{BASE_URL}{quote_plus(string=f'{artist} {title} lyrics')}"
-    print(search_url)
 
     try:
         web_page: str = requests.get(url=search_url, headers=HEADERS).text
