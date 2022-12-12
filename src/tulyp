@@ -106,6 +106,7 @@ def main() -> None:
     else:
         try:
             show_lyrics(title=title, artist=artist, source=source, cache=False)
+            lyrics_found = True
         except LyricsNotFoundError:
             lyrics_found = False
 
