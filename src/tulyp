@@ -25,10 +25,10 @@ if len(sys.argv) > 1:
 def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> None:
     """Display lyrics and write it to cache or serve lyrics from cache if cache=True.
 
-    Keyword arguments:
-        track_name: str -- track name in format "artist - title"
-        source: str -- source to fetch lyrics from (genius, azlyrics, google)
-        cache: bool -- whether to check if lyrics are available from cache
+    Args:
+        track_name (str): track name in format "artist - title"
+        source (str): source to fetch lyrics from (genius, azlyrics, google)
+        cache (bool): whether to check if lyrics are available from cache
     """
     # some empty lines concatenated to the lyrics for better readablility in a pager
     bottom_padding = "\n" * 30

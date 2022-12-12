@@ -28,8 +28,8 @@ def format_lyrics(lyrics: str, title: str) -> str:
     under the lyrics section. This function removes those and returns only
     the lyrics.
 
-    Keyword arguments:
-        lyrics: str -- the lyrics gathered from genius.com
+    Args:
+        lyrics (str): The lyrics gathered from genius.com.
     """
     lyrics = re.sub(f"{title} Lyrics", "", lyrics) # remove title from first line of lyrics
     lyrics = re.sub(r"EmbedShare Url:CopyEmbed:Copy", "", lyrics)
@@ -46,12 +46,12 @@ def get_lyrics(title: str, artist: str) -> str:
     genius.com. If there are no lyrics for a song, this
     function will raise a LyricsNotFoundError exception.
     
-    Keyword arguments:
-        title: str  -- the title of the song
-        artist: str -- the name of the artist
+    Args:
+        title (str): The title of the song.
+        artist (str): The name of the artist.
 
     Raises:
-        LyricsNotFoundError
+        LyricsNotFoundError: No lyrics were found.
     """
     try:
         song = genius_api.search_song(title=title, artist=artist)
