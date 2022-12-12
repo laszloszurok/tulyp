@@ -42,8 +42,7 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
     if os.path.isfile(filepath) and cache:
         with open(filepath) as file:
             print("using lyrics from cache")
-            lyrics_lines = file.read().splitlines()
-            lyrics_lines = "\n".join(lyrics_lines)
+            lyrics_lines = file.read()
             serving_from_cache = True
     else:
         if source == "genius":
