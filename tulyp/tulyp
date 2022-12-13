@@ -3,7 +3,6 @@
 # Credit to https://github.com/laszloszurok/tulyp
 
 import os
-import pydoc
 import sys
 import dbus
 from pathlib import Path
@@ -11,11 +10,11 @@ from pathlib import Path
 from lyrics_sources import genius, azlyrics, google
 from exceptions.lyrics_not_found import LyricsNotFoundError
 from utils import create_cache_path
+from screen import Screen
 
 cache_path = Path.home().joinpath(".cache", "lyrics")
 
 player = "ncspot"
-pager_cmd = "bat -n"
 sources = ["genius", "google", "azlyrics"]
 
 source = ""
@@ -30,7 +29,7 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
         source (str): source to fetch lyrics from (genius, azlyrics, google)
         cache (bool): whether to check if lyrics are available from cache
     """
-    # some empty lines concatenated to the lyrics for better readablility in a pager
+    # some empty lines concatenated to the lyrics for better readablility
     bottom_padding = "\n" * 30
     track_name = f"{artist} - {title}"
     filepath = create_cache_path(track_name)
@@ -59,14 +58,11 @@ def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> Non
             print(f"Unknown source {source}")
             sys.exit()
 
-    if not serving_from_cache:
+    if not serving_from_cache and lyrics is not None:
         with open(filepath, "w") as file:
             file.writelines(lyrics)
 
-    pydoc.pipepager(
-        f"{track_name}\n\n{lyrics}{bottom_padding}",
-        cmd=pager_cmd
-    )
+    return f"{track_name}\n\n{lyrics}{bottom_padding}"
 
 def main() -> None:
     """Run tulyp."""
@@ -91,12 +87,13 @@ def main() -> None:
         print(f"{player} is not running")
         sys.exit()
 
+    lyrics = ""
     lyrics_found: bool = False
 
     if not source:
         for s in sources:
             try:
-                show_lyrics(title=title, artist=artist, source=s)
+                lyrics = show_lyrics(title=title, artist=artist, source=s)
                 lyrics_found = True
                 break
             except LyricsNotFoundError:
@@ -106,13 +103,17 @@ def main() -> None:
         sys.exit()
     else:
         try:
-            show_lyrics(title=title, artist=artist, source=source, cache=False)
+            lyrics = show_lyrics(title=title, artist=artist, source=source, cache=False)
             lyrics_found = True
         except LyricsNotFoundError:
             lyrics_found = False
 
     if not lyrics_found:
         print("No lyrics found")
+    else:
+        items = lyrics.splitlines()
+        screen = Screen(items)
+        screen.run()
 
 if __name__ == "__main__":
     main()
