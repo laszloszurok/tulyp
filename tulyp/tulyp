@@ -21,13 +21,21 @@ source = ""
 if len(sys.argv) > 1:
     source = sys.argv[1]
 
-def show_lyrics(title: str, artist: str, source: str, cache: bool = True) -> None:
-    """Display lyrics and write it to cache or serve lyrics from cache if cache=True.
+def get_lyrics(title: str, artist: str, source: str, cache: bool = True) -> str:
+    """Get lyrics for a song from the given source.
+
+    Lyrics will be written to a cache file after obtaining them from a source.
+    Further calls will provide the lyrics from the cache, unless a source is
+    passed in.
 
     Args:
-        track_name (str): track name in format "artist - title"
-        source (str): source to fetch lyrics from (genius, azlyrics, google)
-        cache (bool): whether to check if lyrics are available from cache
+        title (str): The title of the song.
+        artist (str): The artist of the song.
+        source (str): The source to fetch lyrics from (genius, azlyrics, google).
+        cache (bool): If True, try serving the lyrics from cache.
+
+    Returns:
+        str: The lyrics of the song as a single string.
     """
     # some empty lines concatenated to the lyrics for better readablility
     bottom_padding = "\n" * 30
@@ -93,7 +101,7 @@ def main() -> None:
     if not source:
         for s in sources:
             try:
-                lyrics = show_lyrics(title=title, artist=artist, source=s)
+                lyrics = get_lyrics(title=title, artist=artist, source=s)
                 lyrics_found = True
                 break
             except LyricsNotFoundError:
@@ -103,7 +111,7 @@ def main() -> None:
         sys.exit()
     else:
         try:
-            lyrics = show_lyrics(title=title, artist=artist, source=source, cache=False)
+            lyrics = get_lyrics(title=title, artist=artist, source=source, cache=False)
             lyrics_found = True
         except LyricsNotFoundError:
             lyrics_found = False
