@@ -41,7 +41,7 @@ def format_lyrics(lyrics: str, title: str) -> str:
     Args:
         lyrics (str): The lyrics gathered from genius.com.
     """
-    lyrics = re.sub(f"{title} Lyrics", "", lyrics) # remove title from first line of lyrics
+    lyrics = re.sub(rf"{title}\s* Lyrics", "", lyrics, flags=re.IGNORECASE) # remove title from first line of lyrics
     lyrics = re.sub(r"EmbedShare Url:CopyEmbed:Copy", "", lyrics)
     lyrics = re.sub(r"[0-9]*Embed*", "", lyrics)
     lyrics = re.sub(r"You might also like", "", lyrics)
