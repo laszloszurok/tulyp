@@ -68,6 +68,10 @@ def get_lyrics(title: str, artist: str) -> str:
         song = genius_api.search_song(title=title, artist=artist)
         if song is not None:
             return format_lyrics(lyrics=song.lyrics, title=title)
+        else:
+            raise LyricsNotFoundError
+    except LyricsNotFoundError:
+        raise LyricsNotFoundError
     except:
         print("Failed to access genius.com! Check you internet connection!")
         raise LyricsNotFoundError
