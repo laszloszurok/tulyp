@@ -36,7 +36,6 @@ def get_lyrics(title: str, artist: str) -> str:
     try:
         web_page: str = requests.get(url=search_url, headers=HEADERS).text
     except:
-        print("Failed to access google.com! Check you internet connection!")
         raise LyricsNotFoundError
 
     html = BeautifulSoup(web_page, "html.parser")

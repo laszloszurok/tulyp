@@ -15,11 +15,9 @@ def get_html(search_url: str, header: dict[str, str] = HEADER) -> str:
         req = Request(search_url, data=None, headers=header)
         req_search_url = urlopen(req)
     except URLError:
-        print("No connection!")
         sys.exit()
 
     if req_search_url.code != 200:
-        print("invalid request")
         sys.exit()
 
     return req_search_url.read().decode("utf-8")

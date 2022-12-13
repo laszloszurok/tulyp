@@ -1,12 +1,16 @@
 import curses
 import subprocess
 import sys
+import dbus
+
+from utils import get_lyrics
+from exceptions.lyrics_not_found import LyricsNotFoundError
 
 class Screen(object):
     UP = -1
     DOWN = 1
 
-    def __init__(self, items):
+    def __init__(self, items, dbus_interface):
         self.window = None
 
         self.width = 0
@@ -15,13 +19,16 @@ class Screen(object):
         self.init_curses()
 
         self.items = items
+        self.dbus_interface = dbus_interface
+        self.artist = None
+        self.title = None
 
         self.max_lines = curses.LINES
         self.top = 0
         self.bottom = len(self.items)
 
     def init_curses(self):
-        """Setup the curses"""
+        """Initialize curses."""
         self.window = curses.initscr()
         self.window.keypad(True)
         self.window.timeout(2000)
@@ -33,7 +40,7 @@ class Screen(object):
         self.height, self.width = self.window.getmaxyx()
 
     def run(self):
-        """Continue running the TUI until get interrupted"""
+        """Continue running the TUI until getting interrupted."""
         try:
             self.input_stream()
         except KeyboardInterrupt:
@@ -42,14 +49,33 @@ class Screen(object):
             curses.endwin()
 
     def input_stream(self):
-        """Waiting an input and run a proper method according to type of input"""
+        """Wait for an input and run a proper method according to type of input."""
         while True:
             self.height, self.width = self.window.getmaxyx()
             curses.resize_term(self.height, self.width)
             self.max_lines = curses.LINES
-            self.display()
+            
+            try:
+                metadata = self.dbus_interface.Get(
+                    "org.mpris.MediaPlayer2.Player",
+                    "Metadata"
+                )
+                artist = metadata.get("xesam:albumArtist")[0]
+                title = metadata.get("xesam:title")
+            except:
+                sys.exit()
 
-            subprocess.run(["notify-send", "tulyp: in event loop"])
+            if self.artist != artist or self.title != title:
+                self.artist = artist
+                self.title = title
+                try:
+                    self.items = get_lyrics(title=title, artist=artist).splitlines()
+                except LyricsNotFoundError:
+                    self.items = ["no lyrics found"]
+                self.top = 0
+                self.bottom = len(self.items)
+            
+            self.display()
 
             ch = self.window.getch()
 
@@ -78,5 +104,5 @@ class Screen(object):
         """Display the items on window"""
         self.window.erase()
         for idx, item in enumerate(self.items[self.top:self.top + self.max_lines]):
-            self.window.addstr(idx, 0, item)
+            self.window.addnstr(idx, 0, item, self.width - 1)
         self.window.refresh()

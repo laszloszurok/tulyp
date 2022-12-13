@@ -5,7 +5,6 @@ import os
 
 from exceptions.lyrics_not_found import LyricsNotFoundError
 
-genius_token: str = "udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1"
 genius_api = None
 
 def init_genius_api():
@@ -13,16 +12,14 @@ def init_genius_api():
 
     The token can be provided through an environment variable called
     TULYP_GENIUS_TOKEN. If this env var is not set, a default token
-    will be used for initialization and a message will be printed
-    stating that a default token is used.
+    will be used for initialization.
     """
-    global genius_token, genius_api
+    global genius_api
+
     try:
         genius_token = os.environ["TULYP_GENIUS_TOKEN"]
     except KeyError:
-        print("No TULYP_GENIUS_TOKEN environment variable found.")
-        print("Using the genius.com API token provided by tulyp.")
-        print()
+        genius_token = "udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1"
 
     genius_api = lyricsgenius.Genius(genius_token)
 
@@ -70,8 +67,5 @@ def get_lyrics(title: str, artist: str) -> str:
             return format_lyrics(lyrics=song.lyrics, title=title)
         else:
             raise LyricsNotFoundError
-    except LyricsNotFoundError:
-        raise LyricsNotFoundError
     except:
-        print("Failed to access genius.com! Check you internet connection!")
         raise LyricsNotFoundError
