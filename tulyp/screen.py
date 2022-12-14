@@ -48,6 +48,30 @@ class Screen(object):
         finally:
             curses.endwin()
 
+    def update_lyrics(self, source: str = None, force=False):
+        try:
+            metadata = self.dbus_interface.Get(
+                "org.mpris.MediaPlayer2.Player",
+                "Metadata"
+            )
+            artist = metadata.get("xesam:albumArtist")[0]
+            title = metadata.get("xesam:title")
+        except:
+            sys.exit()
+
+        if force or self.artist != artist or self.title != title:
+            self.artist = artist
+            self.title = title
+            try:
+                if source is not None:
+                    self.items = get_lyrics(title=title, artist=artist, source=source, cache=False).splitlines()
+                else:
+                    self.items = get_lyrics(title=title, artist=artist).splitlines()
+            except LyricsNotFoundError:
+                self.items = ["no lyrics found"]
+            self.top = 0
+            self.bottom = len(self.items)
+
     def input_stream(self):
         """Wait for an input and run a proper method according to type of input."""
         while True:
@@ -55,25 +79,7 @@ class Screen(object):
             curses.resize_term(self.height, self.width)
             self.max_lines = curses.LINES
             
-            try:
-                metadata = self.dbus_interface.Get(
-                    "org.mpris.MediaPlayer2.Player",
-                    "Metadata"
-                )
-                artist = metadata.get("xesam:albumArtist")[0]
-                title = metadata.get("xesam:title")
-            except:
-                sys.exit()
-
-            if self.artist != artist or self.title != title:
-                self.artist = artist
-                self.title = title
-                try:
-                    self.items = get_lyrics(title=title, artist=artist).splitlines()
-                except LyricsNotFoundError:
-                    self.items = ["no lyrics found"]
-                self.top = 0
-                self.bottom = len(self.items)
+            self.update_lyrics()
             
             self.display()
 
@@ -83,6 +89,12 @@ class Screen(object):
                 self.scroll(self.UP)
             elif ch == curses.KEY_DOWN or ch == ord('j'):
                 self.scroll(self.DOWN)
+            elif ch == ord('g'):
+                self.update_lyrics(source="google", force=True)
+            elif ch == ord('G'):
+                self.update_lyrics(source="genius", force=True)
+            elif ch == ord('a'):
+                self.update_lyrics(source="azlyrics", force=True)
             elif ch == ord('q'):
                 sys.exit()
 
