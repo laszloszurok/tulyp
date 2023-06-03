@@ -19,11 +19,11 @@ Lyrics get saved under `~/.cache/lyrics/artist-title`.
 If there are cached lyrics for a song, no queries will be executed.
 
 Tulyp continously checks what song is currently playing and automatically reloads itself, to show the appropriate lyrics.
-You can switch between lyrics sources with keybindings:
+You can switch between lyrics sources with number keys:
 
-* G - genius
-* g - google
-* a - azlyrics
+* 1 - genius
+* 2 - google
+* 3 - azlyrics
 
 ## Requirements
 

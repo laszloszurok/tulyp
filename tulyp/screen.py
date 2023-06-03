@@ -88,11 +88,11 @@ class Screen(object):
                 self.scroll(self.UP)
             elif ch == curses.KEY_DOWN or ch == ord('j'):
                 self.scroll(self.DOWN)
-            elif ch == ord('g'):
-                self.update_lyrics(source="google", force=True)
-            elif ch == ord('G'):
+            elif ch == ord('1'):
                 self.update_lyrics(source="genius", force=True)
-            elif ch == ord('a'):
+            elif ch == ord('2'):
+                self.update_lyrics(source="google", force=True)
+            elif ch == ord('3'):
                 self.update_lyrics(source="azlyrics", force=True)
             elif ch == ord('q'):
                 sys.exit()
