@@ -1,7 +1,5 @@
 import curses
-import subprocess
 import sys
-import dbus
 
 from utils import get_lyrics
 from exceptions.lyrics_not_found import LyricsNotFoundError
@@ -10,13 +8,16 @@ class Screen(object):
     UP = -1
     DOWN = 1
 
-    def __init__(self, items, dbus_interface):
-        self.window = None
+    def __init__(self, dbus_interface, items: list[str] = []):
+        self.window = curses.initscr()
+        self.window.keypad(True)
+        self.window.timeout(2000)
+        curses.noecho()
+        curses.cbreak()
+        curses.curs_set(0)
 
         self.width = 0
         self.height = 0
-
-        self.init_curses()
 
         self.items = items
         self.dbus_interface = dbus_interface
@@ -26,16 +27,6 @@ class Screen(object):
         self.max_lines = curses.LINES
         self.top = 0
         self.bottom = len(self.items)
-
-    def init_curses(self):
-        """Initialize curses."""
-        self.window = curses.initscr()
-        self.window.keypad(True)
-        self.window.timeout(2000)
-
-        curses.noecho()
-        curses.cbreak()
-        curses.curs_set(0)
 
         self.height, self.width = self.window.getmaxyx()
 
@@ -48,7 +39,7 @@ class Screen(object):
         finally:
             curses.endwin()
 
-    def update_lyrics(self, source: str = None, force=False):
+    def update_lyrics(self, source: str = "", force=False):
         try:
             metadata = self.dbus_interface.Get(
                 "org.mpris.MediaPlayer2.Player",
@@ -63,10 +54,18 @@ class Screen(object):
             self.artist = artist
             self.title = title
             try:
-                if source is not None:
-                    self.items = get_lyrics(title=title, artist=artist, source=source, cache=False).splitlines()
+                if source != "":
+                    self.items = get_lyrics(
+                        title=title,
+                        artist=artist,
+                        source=source,
+                        cache=False
+                    ).splitlines()
                 else:
-                    self.items = get_lyrics(title=title, artist=artist).splitlines()
+                    self.items = get_lyrics(
+                        title=title,
+                        artist=artist
+                    ).splitlines()
             except LyricsNotFoundError:
                 self.items = ["no lyrics found"]
             self.top = 0

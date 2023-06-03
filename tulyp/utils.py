@@ -3,7 +3,6 @@ import os
 import sys
 import dbus
 from pathlib import Path
-from urllib.parse import quote_plus
 
 from lyrics_sources import genius, google, azlyrics
 from exceptions.lyrics_not_found import LyricsNotFoundError
@@ -35,7 +34,7 @@ def get_dbus_interface(player: str) -> dbus.Interface:
         print(f"{player} is not running")
         sys.exit()
 
-def get_lyrics(title: str, artist: str, source: str = None, cache: bool = True) -> str:
+def get_lyrics(title: str, artist: str, source: str = "", cache: bool = True) -> str:
     """Get lyrics for a song from the given source.
 
     Lyrics will be written to a cache file after obtaining them from a source.
@@ -64,7 +63,7 @@ def get_lyrics(title: str, artist: str, source: str = None, cache: bool = True) 
         with open(filepath) as file:
             lyrics = file.read()
             serving_from_cache = True
-    elif source is None:
+    elif source == "":
         try:
             genius.init_genius_api()
             lyrics = genius.get_lyrics(title=title, artist=artist)

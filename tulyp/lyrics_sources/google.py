@@ -1,6 +1,4 @@
-import sys
 import os
-import re
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
@@ -42,7 +40,7 @@ def get_lyrics(title: str, artist: str) -> str:
     target_div = html.find(name="div", attrs={"jsname": "WbKHeb"})
 
     if target_div is not None and target_div.contents:
-        lyrics_html: [str] = target_div.contents
+        lyrics_html: list[str] = target_div.contents
     else:
         raise LyricsNotFoundError
 

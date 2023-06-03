@@ -2,59 +2,25 @@
 # -*- coding: utf-8 -*-
 # Credit to https://github.com/laszloszurok/tulyp
 
-import os
 import sys
 import dbus
-from pathlib import Path
 
-from lyrics_sources import genius, azlyrics, google
-from exceptions.lyrics_not_found import LyricsNotFoundError
-from utils import create_cache_path, get_lyrics, get_dbus_interface
+from utils import get_dbus_interface
 from screen import Screen
 
-cache_path = Path.home().joinpath(".cache", "lyrics")
-
 player = "ncspot"
-sources = ["genius", "google", "azlyrics"]
-
-source = ""
 if len(sys.argv) > 1:
-    source = sys.argv[1]
+    player = sys.argv[1]
 
 def main() -> None:
     """Run tulyp."""
     try:
         interface = get_dbus_interface(player=player)
-        metadata = interface.Get("org.mpris.MediaPlayer2.Player", "Metadata")
-        artist = metadata.get("xesam:albumArtist")[0]
-        title = metadata.get("xesam:title")
     except dbus.DBusException:
         print(f"{player} is not running")
         sys.exit()
 
-    lyrics = ""
-    lyrics_found: bool = False
-
-    if not source:
-        try:
-            lyrics = get_lyrics(title=title, artist=artist)
-            lyrics_found = True
-        except LyricsNotFoundError:
-            lyrics = "no lyrics found"
-    elif source not in sources:
-        print("Unknown source")
-        sys.exit()
-    else:
-        try:
-            lyrics = get_lyrics(title=title, artist=artist, source=source, cache=False)
-            lyrics_found = True
-        except LyricsNotFoundError:
-            lyrics_found = False
-
-    if not lyrics_found:
-        lyrics = "no lyrics found"
-
-    screen = Screen(items=lyrics.splitlines(), dbus_interface=interface)
+    screen = Screen(dbus_interface=interface)
     screen.run()
 
 if __name__ == "__main__":

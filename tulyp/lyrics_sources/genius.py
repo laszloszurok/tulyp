@@ -1,7 +1,7 @@
 import lyricsgenius
-import sys
 import re
 import os
+from requests.exceptions import Timeout
 
 from exceptions.lyrics_not_found import LyricsNotFoundError
 
@@ -38,11 +38,13 @@ def format_lyrics(lyrics: str, title: str) -> str:
     Args:
         lyrics (str): The lyrics gathered from genius.com.
     """
+    lyrics = lyrics.replace(chr(0x2019), "'") # replace unicode quote
     lyrics = re.sub(rf"{title}\s* Lyrics", "", lyrics, flags=re.IGNORECASE) # remove title from first line of lyrics
     lyrics = re.sub(r"EmbedShare Url:CopyEmbed:Copy", "", lyrics)
     lyrics = re.sub(r"[0-9]*Embed*", "", lyrics)
     lyrics = re.sub(r"You might also like", "", lyrics)
     lyrics = re.sub(r"Translations.*\[", "[", lyrics)
+    lyrics = re.sub(r"[0-9].*Contributors*", "", lyrics)
 
     return lyrics
 
@@ -61,11 +63,12 @@ def get_lyrics(title: str, artist: str) -> str:
         LyricsNotFoundError: No lyrics were found.
     """
 
-    try:
-        song = genius_api.search_song(title=title, artist=artist)
-        if song is not None:
-            return format_lyrics(lyrics=song.lyrics, title=title)
-        else:
+    if genius_api is not None:
+        try:
+            song = genius_api.search_song(title=title, artist=artist)
+            if song is not None:
+                return format_lyrics(lyrics=song.lyrics, title=title)
+        except Timeout:
             raise LyricsNotFoundError
-    except:
-        raise LyricsNotFoundError
+
+    raise LyricsNotFoundError
