@@ -2,39 +2,39 @@
 
 ![screenshot](images/screenshot.png)
 
-`tulyp` is a simple python script which displays the lyrics of the currently playing spotify song in the terminal. It checks for lyrics from 3 sources (stops at the first successful result): first genius.com, then google.com and finally azlyrics.com.
+`tulyp` displays the lyrics of the currently playing song in the terminal.
+It checks for lyrics from 3 sources (stops at the first successful result):
 
-Players other than spotify can be used too, if they are compliant with the mpris specification. Change the value of the `player` variable in the script to the name of the player (for ex. `player = "ncspot"`).
+* genius.com
+* google.com
+* azlyrics.com
 
-Once `tulyp` finds lyrics, it pipes the text into a command line utility, called `bat`, which provides line numbering, and paging (so you can scroll through long lyrics with j/k or the arrow keys).
+Tulyp only works with music players which are compliant with the [mpris](https://wiki.archlinux.org/title/MPRIS) specification (e.g. Spotify, ncspot).
+You can specify the player to use as a commandline argument: `tulyp spotify`.
+If no player is provided ncspot will be used.
 
-If one of the sources is provided as the first argument, only that source will be tried. Can be used like this:
-```
-./tulyp genius
-./tulyp google
-./tulyp azlyrics
-```
+Lyrics will be displayed in a curses window and you can use the arrow keys or j/k to scroll up and down.
 
-Without arguments it performs checks automatically, as needed.
+Lyrics get saved under `~/.cache/lyrics/artist-title`.
+If there are cached lyrics for a song, no queries will be executed.
 
-Lyrics are saved under `~/.cache/lyrics/artist-title`. If there are cached lyrics for a song, no queries will be executed and lyrics will be served from the cache. (Except when a source is passed as the first argument, then that source will be used.)
+Tulyp continously checks what song is currently playing and automatically reloads itself, to show the appropriate lyrics.
+You can switch between lyrics sources with keybindings:
+
+* G - genius
+* g - google
+* a - azlyrics
 
 ## Requirements
 
-* `bat` to display the lyrics (it is available in most linux distributions default repositories)
-* `lyricsgenius` python lib to be able to get lyrics from genius.com (`pip install lyricsgenius`)
-* `python-dbus` to get the currently playing song (also available in default repos)
-* `beautifulsoup4` python lib to process html
-
-## Different binary name for `bat` on Ubuntu
-
-On Ubuntu the `bat` command had to be renamed to `batcat` because of a nameclash with an other program. If you use Ubuntu make sure to change `player_cmd = "bat -n"` to `player_cmd = "batcat -n"` in `tulyp` to be able to display lyrics. See [this issue](https://github.com/laszloszurok/tulyp/issues/2) for more info. 
+* `lyricsgenius` provides API to get lyrics from genius.com
+* `python-dbus` to get the currently playing song through dbus
+* `beautifulsoup4` to extract lyrics from html
 
 ## Naming
 
-* bat provides paging, so we got a terminal user interface => tu
-* we are dealing with lyrics => ly
-* the script is written in python => p
-* tu + ly + p = tulyp
+* we got a terminal user interface -> tu
+* we are dealing with lyrics       -> ly
+* the program is written in python -> p
 
 I am so good at naming things.
