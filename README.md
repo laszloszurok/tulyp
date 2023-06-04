@@ -25,11 +25,16 @@ You can switch between lyrics sources with number keys:
 * 2 - google
 * 3 - azlyrics
 
-## Requirements
+## Dependencies (they will be installed with `tulyp`)
 
 * `lyricsgenius` provides API to get lyrics from genius.com
-* `python-dbus` to get the currently playing song through dbus
+* `dbus-python` to get the currently playing song through dbus
+* `requests` to search for lyrincs on google
 * `beautifulsoup4` to extract lyrics from html
+
+## Install
+
+`pip install tulyp`
 
 ## Naming
 
