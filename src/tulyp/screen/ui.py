@@ -1,8 +1,8 @@
 import curses
 import sys
 
-from utils import get_lyrics
-from exceptions.lyrics_not_found import LyricsNotFoundError
+from tulyp.utils.misc import get_lyrics
+from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
 
 class Screen(object):
     UP = -1

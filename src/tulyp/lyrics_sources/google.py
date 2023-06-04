@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
 
-from exceptions.lyrics_not_found import LyricsNotFoundError
+from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
 
 BASE_URL: str = "https://www.google.com/search?q="
 HEADERS: dict[str, str] = {

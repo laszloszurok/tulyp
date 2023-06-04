@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tulyp"
+version = "0.0.1"
+authors = [
+  { name="pulzar", email="pulzar@envs.net" },
+]
+description = "Display lyrics of the currently playing song in a terminal."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "lyricsgenius",
+  "beautifulsoup4",
+  "dbus-python",
+  "requests"
+]
+
+[project.scripts]
+tulyp = "tulyp:main"
+
+[project.urls]
+"Homepage" = "https://github.com/laszloszurok/tulyp"
+"Bug Tracker" = "https://github.com/laszloszurok/tulyp/issues"

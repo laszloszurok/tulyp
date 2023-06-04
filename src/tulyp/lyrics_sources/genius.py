@@ -3,7 +3,7 @@ import re
 import os
 from requests.exceptions import Timeout
 
-from exceptions.lyrics_not_found import LyricsNotFoundError
+from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
 
 genius_api = None
 

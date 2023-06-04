@@ -4,7 +4,7 @@ from urllib.request import Request, urlopen
 from urllib.error import URLError
 from urllib.parse import quote_plus
 
-from exceptions.lyrics_not_found import LyricsNotFoundError
+from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
 
 HEADER = {"User-Agent": "Mozilla/5.0"}
 base_url = "https://www.google.com/search?q="

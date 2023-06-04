@@ -5,8 +5,8 @@
 import sys
 import dbus
 
-from utils import get_dbus_interface
-from screen import Screen
+from tulyp.utils.misc import get_dbus_interface
+from tulyp.screen.ui import Screen
 
 player = "ncspot"
 
@@ -23,6 +23,3 @@ def main() -> None:
 
     screen = Screen(dbus_interface=interface)
     screen.run()
-
-if __name__ == "__main__":
-    main()

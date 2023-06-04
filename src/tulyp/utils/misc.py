@@ -4,8 +4,8 @@ import sys
 import dbus
 from pathlib import Path
 
-from lyrics_sources import genius, google, azlyrics
-from exceptions.lyrics_not_found import LyricsNotFoundError
+from tulyp.lyrics_sources import genius, google, azlyrics
+from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
 
 cache_path = Path.home().joinpath(".cache", "lyrics")
 
