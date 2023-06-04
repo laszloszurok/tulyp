@@ -1,6 +1,6 @@
 # tulyp
 
-![screenshot](images/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/laszloszurok/tulyp/main/images/screenshot.png)
 
 `tulyp` displays the lyrics of the currently playing song in the terminal.
 It checks for lyrics from 3 sources (stops at the first successful result):
@@ -34,7 +34,20 @@ You can switch between lyrics sources with number keys:
 
 ## Install
 
-`pip install tulyp`
+### From PyPi
+
+```shell
+pip install --user tulyp
+```
+
+### From source
+
+```shell
+git clone https://github.com/laszloszurok/tulyp.git
+cd tulyp
+python -m build
+pip install --user dist/tulyp-0.0.3-py3-none-any.whl
+```
 
 ## Naming
 
