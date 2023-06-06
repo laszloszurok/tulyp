@@ -15,7 +15,7 @@ If no player is provided ncspot will be used.
 
 Lyrics will be displayed in a curses window and you can use the arrow keys or j/k to scroll up and down.
 
-Lyrics get saved under `~/.cache/lyrics/artist-title`.
+Lyrics get saved under `XDG_CACHE_HOME/tulyp/artist-title` (default: `~/.cache/tulyp/artist-title`).
 If there are cached lyrics for a song, no queries will be executed.
 
 Tulyp continously checks what song is currently playing and automatically reloads itself, to show the appropriate lyrics.

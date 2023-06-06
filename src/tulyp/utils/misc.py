@@ -7,7 +7,8 @@ from pathlib import Path
 from tulyp.lyrics_sources import genius, google, azlyrics
 from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
 
-cache_path = Path.home().joinpath(".cache", "lyrics")
+cache_path = (f"{xdg_cache}/tulyp" if (xdg_cache := os.getenv("XDG_CACHE_HOME"))
+              and os.path.isabs(xdg_cache) else Path.home().joinpath(".cache", "tulyp"))
 
 def create_cache_path(seed: str) -> str:
     """Return a file path generated from the input to save the lyrics to.
