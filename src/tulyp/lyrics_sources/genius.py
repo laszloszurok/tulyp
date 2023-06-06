@@ -16,10 +16,10 @@ def init_genius_api():
     """
     global genius_api
 
-    try:
-        genius_token = os.environ["TULYP_GENIUS_TOKEN"]
-    except KeyError:
-        genius_token = "udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1"
+    genius_token = os.getenv(
+        "TULYP_GENIUS_TOKEN",
+        default="udS-ThnfpSvQIl5H-wCoKeXhydgLTdpsp1L-0_sW2VANeiWZbK5xvfTOTTnnUCz1"
+    )
 
     genius_api = lyricsgenius.Genius(genius_token)
 
