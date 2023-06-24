@@ -3,6 +3,8 @@ import sys
 
 from tulyp.utils.misc import get_lyrics
 from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
+from tulyp.config import constants
+
 
 class Screen(object):
     UP = -1
@@ -94,6 +96,10 @@ class Screen(object):
                 self.update_lyrics(source="google", force=True)
             elif ch == ord('3'):
                 self.update_lyrics(source="azlyrics", force=True)
+            elif ch == ord('g'):
+                self.top = 0
+            elif ch == ord('G'):
+                self.top = self.max_lines - constants.BOTTOM_PADDING
             elif ch == ord('q'):
                 sys.exit()
 

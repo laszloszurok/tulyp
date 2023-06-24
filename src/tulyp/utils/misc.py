@@ -6,6 +6,8 @@ from pathlib import Path
 
 from tulyp.lyrics_sources import genius, google, azlyrics
 from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
+from tulyp.config import constants
+
 
 cache_path = (f"{xdg_cache}/tulyp" if (xdg_cache := os.getenv("XDG_CACHE_HOME"))
               and os.path.isabs(xdg_cache) else Path.home().joinpath(".cache", "tulyp"))
@@ -51,11 +53,10 @@ def get_lyrics(title: str, artist: str, source: str = "", cache: bool = True) ->
     Returns:
         str: The lyrics of the song as a single string.
     """
-    # some empty lines concatenated to the lyrics for better readablility
-    bottom_padding = "\n" * 30
     track_name = f"{artist} - {title}"
     filepath = create_cache_path(track_name)
     serving_from_cache = False
+    extra_lines = "\n" * constants.BOTTOM_PADDING
 
     if not os.path.isdir(cache_path):
         os.makedirs(cache_path)
@@ -90,4 +91,4 @@ def get_lyrics(title: str, artist: str, source: str = "", cache: bool = True) ->
         with open(filepath, "w") as file:
             file.writelines(lyrics)
 
-    return f"{track_name}\n\n{lyrics}{bottom_padding}"
+    return f"{track_name}\n\n{lyrics}{extra_lines}"

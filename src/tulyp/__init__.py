@@ -8,6 +8,7 @@ import dbus
 from tulyp.utils.misc import get_dbus_interface
 from tulyp.screen.ui import Screen
 
+
 player = "ncspot"
 
 if len(sys.argv) > 1:
