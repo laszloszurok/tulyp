@@ -46,7 +46,7 @@ pipx install tulyp
 git clone https://github.com/laszloszurok/tulyp.git
 cd tulyp
 python -m build
-pip install --user dist/tulyp-0.0.3-py3-none-any.whl
+pipx dist/tulyp-0.0.3-py3-none-any.whl
 ```
 
 ## Naming
