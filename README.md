@@ -37,7 +37,7 @@ You can switch between lyrics sources with number keys:
 ### From PyPi
 
 ```shell
-pip install --user tulyp
+pipx install tulyp
 ```
 
 ### From source
