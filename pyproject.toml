@@ -30,3 +30,26 @@ tulyp = "tulyp:main"
 [project.urls]
 "Homepage" = "https://github.com/laszloszurok/tulyp"
 "Bug Tracker" = "https://github.com/laszloszurok/tulyp/issues"
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+  "black>=23.1.0",
+  "ruff>=0.0.243",
+]
+
+[tool.hatch.envs.lint.scripts]
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}",
+]
+fmt = [
+  "black {args:.}",
+  "ruff --fix {args:.}",
+  "style",
+]
+
+[tool.black]
+target-version = ["py310"]
+line-length = 120
+skip-string-normalization = true
