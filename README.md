@@ -27,10 +27,11 @@ You can switch between lyrics sources with number keys:
 
 ## Dependencies (they will be installed with `tulyp`)
 
-* `lyricsgenius` provides API to get lyrics from genius.com
-* `dbus-python` to get the currently playing song through dbus
-* `requests` to search for lyrincs on google
 * `beautifulsoup4` to extract lyrics from html
+* `dbus-python` to get the currently playing song through dbus
+* `lyricsgenius` provides API to get lyrics from genius.com
+* `psutil` needed when using ncspot to get the pid of the ncspot process
+* `requests` to search for lyrincs on google
 
 ## Install
 
