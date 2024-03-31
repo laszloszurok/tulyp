@@ -2,6 +2,7 @@ import re
 import os
 import sys
 import dbus
+import psutil
 from pathlib import Path
 
 from tulyp.lyrics_sources import genius, google, azlyrics
@@ -25,6 +26,12 @@ def create_cache_path(seed: str) -> str:
 def get_dbus_interface(player: str) -> dbus.Interface:
     try:
         session_bus = dbus.SessionBus()
+
+        if player == "ncspot":
+            for proc in psutil.process_iter(['name', 'pid']):
+                if proc.info["name"] == player:
+                    player = f"{player}.instance{proc.info['pid']}"
+                    break
 
         bus_name = f"org.mpris.MediaPlayer2.{player}"
         obj_path = "/org/mpris/MediaPlayer2"

@@ -17,10 +17,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "lyricsgenius",
   "beautifulsoup4",
   "dbus-python",
-  "requests"
+  "lyricsgenius",
+  "psutil",
+  "requests",
 ]
 
 [project.scripts]
