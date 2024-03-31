@@ -10,8 +10,12 @@ from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
 from tulyp.config import constants
 
 
-cache_path = (f"{xdg_cache}/tulyp" if (xdg_cache := os.getenv("XDG_CACHE_HOME"))
-              and os.path.isabs(xdg_cache) else Path.home().joinpath(".cache", "tulyp"))
+cache_path = (
+    f"{xdg_cache}/tulyp"
+    if (xdg_cache := os.getenv("XDG_CACHE_HOME")) and os.path.isabs(xdg_cache)
+    else Path.home().joinpath(".cache", "tulyp")
+)
+
 
 def create_cache_path(seed: str) -> str:
     """Return a file path generated from the input to save the lyrics to.
@@ -22,6 +26,7 @@ def create_cache_path(seed: str) -> str:
     filename = re.sub(r"(\[.*\].*)|(\(.*\).*)", "", seed).strip()
     filename = re.sub(r"\s|\/|\\|\.", "", filename)
     return os.path.join(cache_path, filename)
+
 
 def get_dbus_interface(player: str) -> dbus.Interface:
     try:
@@ -43,6 +48,7 @@ def get_dbus_interface(player: str) -> dbus.Interface:
     except dbus.DBusException:
         print(f"{player} is not running")
         sys.exit()
+
 
 def get_lyrics(title: str, artist: str, source: str = "", cache: bool = True) -> str:
     """Get lyrics for a song from the given source.

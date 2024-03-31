@@ -9,6 +9,7 @@ from tulyp.exceptions.lyrics_not_found import LyricsNotFoundError
 HEADER = {"User-Agent": "Mozilla/5.0"}
 base_url = "https://www.google.com/search?q="
 
+
 def get_html(search_url: str, header: dict[str, str] = HEADER) -> str:
     """Return html text from given search_url."""
     try:
@@ -54,7 +55,9 @@ def get_lyrics(title: str, artist: str) -> str:
         return az_html[0]
 
     az_regex = re.compile(
-        r"<!--Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. -->(.*)<!-- MxM banner -->", re.S)
+        r"<!--Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. -->(.*)<!-- MxM banner -->",
+        re.S,
+    )
 
     ly = az_regex.search(az_html)
     if ly is None:

@@ -14,6 +14,7 @@ player = "ncspot"
 if len(sys.argv) > 1:
     player = sys.argv[1]
 
+
 def main() -> None:
     """Run tulyp."""
     try:

@@ -9,8 +9,9 @@ BASE_URL: str = "https://www.google.com/search?q="
 HEADERS: dict[str, str] = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:79.0) Gecko/20100101 Firefox/79.0",
     "Host": "www.google.com",
-    "Referer": "https://www.google.com/"
+    "Referer": "https://www.google.com/",
 }
+
 
 def get_lyrics(title: str, artist: str) -> str:
     """Search for the given song on Google and return the lyrics.
@@ -53,4 +54,3 @@ def get_lyrics(title: str, artist: str) -> str:
         lyrics = f"{lyrics}{verse}\n\n"
 
     return lyrics
-

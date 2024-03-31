@@ -43,13 +43,10 @@ class Screen(object):
 
     def update_lyrics(self, source: str = "", force=False):
         try:
-            metadata = self.dbus_interface.Get(
-                "org.mpris.MediaPlayer2.Player",
-                "Metadata"
-            )
+            metadata = self.dbus_interface.Get("org.mpris.MediaPlayer2.Player", "Metadata")
             artist = metadata.get("xesam:albumArtist")[0]
             title = metadata.get("xesam:title")
-        except:
+        except BaseException:
             sys.exit()
 
         if force or self.artist != artist or self.title != title:
@@ -57,17 +54,9 @@ class Screen(object):
             self.title = title
             try:
                 if source != "":
-                    self.items = get_lyrics(
-                        title=title,
-                        artist=artist,
-                        source=source,
-                        cache=False
-                    ).splitlines()
+                    self.items = get_lyrics(title=title, artist=artist, source=source, cache=False).splitlines()
                 else:
-                    self.items = get_lyrics(
-                        title=title,
-                        artist=artist
-                    ).splitlines()
+                    self.items = get_lyrics(title=title, artist=artist).splitlines()
             except LyricsNotFoundError:
                 self.items = ["no lyrics found"]
             self.top = 0
@@ -79,9 +68,9 @@ class Screen(object):
             self.height, self.width = self.window.getmaxyx()
             curses.resize_term(self.height, self.width)
             self.max_lines = curses.LINES
-            
+
             self.update_lyrics()
-            
+
             self.display()
 
             ch = self.window.getch()
@@ -120,6 +109,6 @@ class Screen(object):
     def display(self):
         """Display the items on window"""
         self.window.erase()
-        for idx, item in enumerate(self.items[self.top:self.top + self.max_lines]):
+        for idx, item in enumerate(self.items[self.top : self.top + self.max_lines]):
             self.window.addnstr(idx, 0, item, self.width - 1)
         self.window.refresh()
